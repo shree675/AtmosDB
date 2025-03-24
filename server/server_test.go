@@ -23,6 +23,45 @@ func TestConcurrentReadsWrites(test *testing.T) {
 	wg.Wait()
 }
 
+func TestTTL(test *testing.T) {
+	st.Init()
+	st.InitScheduler()
+
+	ip1 := t.InputPayload{
+		SId:  "0",
+		Key:  "k1",
+		Val:  "1",
+		Ttl:  2,
+		Type: int8(util.INT),
+		Op:   int8(util.PUT),
+	}
+
+	stOk := st.StoreValue(&ip1)
+	if !stOk {
+		test.Error("Failed to store value")
+	}
+
+	ip2 := t.InputPayload{
+		SId: "0",
+		Key: "k1",
+	}
+
+	val, gtOk := st.GetValue(&ip2)
+	if !gtOk {
+		test.Error("Failed to get value")
+	}
+	if val.Val != 1 {
+		test.Errorf("Expected 1, got %d\n", val.Val)
+	}
+
+	time.Sleep(5 * time.Second)
+
+	_, ok := st.GetValue(&ip2)
+	if ok {
+		test.Error("Key not expired")
+	}
+}
+
 func readWrite(id string, wg *sync.WaitGroup, test *testing.T) {
 	defer wg.Done()
 

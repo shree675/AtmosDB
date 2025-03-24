@@ -56,7 +56,7 @@ func StoreValue(ip *t.InputPayload) bool {
 	}
 
 	if ttl != 0 {
-		AddExpiryItem(ip.Key, now+int64(ttl)*1000)
+		go AddExpiryItem(ip.Key, now+int64(ttl)*1000)
 	}
 
 	return true
