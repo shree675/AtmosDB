@@ -5,7 +5,7 @@ A simple in-memory key-value store with concurrency and strict types.
 <img src="https://github.com/user-attachments/assets/5b128228-cc70-4218-a36d-6e9fddef58b7" width="600px" />
 
 ## About
-An in-memory concurrent cache server and CLI, packaged into one.
+A simple in-memory concurrent cache server and CLI, packaged into one.
 
 Unlike Redis, AtmosDB doesn't infer datatypes but demands explicit types.
 
@@ -34,29 +34,29 @@ $ atmosdb cli <server_host_port>
 
 ## Commands
 These are the commands currently supported:
-1. `db.version`
+1. `db.version`  
 Prints the server's version.
-2. `GET key`
+2. `GET key`  
 Prints the value stored in the key along with its datatype, or _<nil>_.
-3. `EXISTS key`
+3. `EXISTS key`  
 Prints _true_ if key exists, else _false_.
-4. `SETINT key val`
+4. `SETINT key val`  
 Upserts the key-value pair, val must be integer.
-5. `SETFLOAT key val`
+5. `SETFLOAT key val`  
 Upserts the key-value pair, val must be float.
-6. `SETSTR key val` or `SETSTR key "val with spaces"`
+6. `SETSTR key val` or `SETSTR key "val with spaces"`  
 Upserts the key-value pair, val can be anything but will be stored as string.
-7. `SETINT.TTL key val ttl`
+7. `SETINT.TTL key val ttl`  
 Upserts the key-value pair with TTL, val must be integer, ttl is in seconds.
-8. `SETFLOAT.TTL key val ttl`
+8. `SETFLOAT.TTL key val ttl`  
 Upserts the key-value pair with TTL, val must be float, ttl is in seconds.
-9. `SETSTR.TTL key val ttl` or `SETSTR key "val with spaces" ttl`
+9. `SETSTR.TTL key val ttl` or `SETSTR.TTL key "val with spaces" ttl`  
 Upserts the key-value pair with ttl, val can be anything but will be stored as string, ttl is in seconds.
-10. `DEL key`
+10. `DEL key`  
 Deletes the key-value pair if exists.
-11. `INCR key`
+11. `INCR key`  
 Increments the value by 1, stored value must be int.
-12. `DECR key`
+12. `DECR key`  
 Decrements the value by 1, stored value must be int.
 
 ## Datatypes
