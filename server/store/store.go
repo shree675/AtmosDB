@@ -12,6 +12,11 @@ import (
 	"atmosdb/util"
 )
 
+/*
+use normal map with custom locking implementation
+instead of sync.Map to reduce memory footprint,
+evident in case of large number of key-value pairs
+*/
 var data map[string]t.Data
 var sem map[int]*sync.RWMutex
 var cache lfu.Cache
