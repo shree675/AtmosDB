@@ -18,9 +18,9 @@ type ExpiryItem struct {
 }
 
 func (it ExpiryItem) Compare(other queue.Item) int {
-	if it.Time < other.(ExpiryItem).Time {
+	if it.Time > other.(ExpiryItem).Time {
 		return 1
-	} else if it.Time > other.(ExpiryItem).Time {
+	} else if it.Time < other.(ExpiryItem).Time {
 		return -1
 	} else {
 		return 0

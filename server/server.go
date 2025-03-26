@@ -98,7 +98,7 @@ func Start() {
 	http.HandleFunc("/get", getValue)
 	http.HandleFunc("/version", getVersion)
 
-	initDBConfig()
+	// explicitly initializing instead of using init() for code readability
 	st.Init()
 	st.InitScheduler()
 

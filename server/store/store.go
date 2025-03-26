@@ -38,7 +38,6 @@ func StoreValue(ip *t.InputPayload) bool {
 	hash := hashCode(ip.Key)
 
 	sem[hash].Lock()
-	defer sem[hash].Unlock()
 
 	ttl := ip.Ttl
 	now := time.Now().UnixMilli()
@@ -54,6 +53,8 @@ func StoreValue(ip *t.InputPayload) bool {
 		OpTime: now,
 		Type:   ip.Type,
 	}
+
+	sem[hash].Unlock()
 
 	if ttl != 0 {
 		go AddExpiryItem(ip.Key, now+int64(ttl)*1000)

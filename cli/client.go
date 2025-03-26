@@ -28,11 +28,11 @@ func Run(conn string) {
 	}
 	defer rl.Close()
 
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, os.Interrupt)
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, os.Interrupt)
 
 	go func() {
-		<-sigChan
+		<-ch
 		os.Exit(0)
 	}()
 
@@ -116,6 +116,6 @@ func process(args []string, session t.SessionConfig) {
 	case string(util.EXISTS):
 		HandleGetKey(session, args)
 	default:
-		fmt.Println("Unknown command '" + args[0] + "'")
+		util.PrintGray("Unknown command '" + args[0] + "'")
 	}
 }
