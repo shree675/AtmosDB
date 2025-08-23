@@ -68,7 +68,8 @@ func createSession(url string) t.SessionConfig {
 			Timeout: 5 * time.Second,
 		},
 		SId:  uuid.NewString(),
-		Conn: url}
+		Conn: url,
+	}
 }
 
 func printVersion(session t.SessionConfig) {

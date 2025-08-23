@@ -21,25 +21,19 @@ func setValue(w http.ResponseWriter, r *http.Request) {
 
 	switch ip.Op {
 	case int8(util.PUT):
-		{
-			if st.StoreValue(&ip) {
-				w.WriteHeader(http.StatusOK)
-			} else {
-				w.WriteHeader(http.StatusInternalServerError)
-			}
+		if st.StoreValue(&ip) {
+			w.WriteHeader(http.StatusOK)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 	case int8(util.DELETE):
-		{
-			st.DeleteValue(ip.Key)
-			w.WriteHeader(http.StatusOK)
-		}
+		st.DeleteValue(ip.Key)
+		w.WriteHeader(http.StatusOK)
 	case int8(util.DELTA):
-		{
-			if st.UpdateValue(&ip) {
-				w.WriteHeader(http.StatusOK)
-			} else {
-				w.WriteHeader(http.StatusInternalServerError)
-			}
+		if st.UpdateValue(&ip) {
+			w.WriteHeader(http.StatusOK)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 	default:
 		http.Error(w, "Unsupported operation '"+strconv.Itoa(int(ip.Op))+"'", http.StatusBadRequest)
