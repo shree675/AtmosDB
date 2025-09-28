@@ -49,7 +49,7 @@ These are the commands currently supported:
 1. `db.version`  
    Prints the server's version.
 2. `GET key`  
-   Prints the value stored in the key along with its datatype, or _<nil>_.
+   Prints the value stored in the key along with its datatype, or _\<nil\>_.
 3. `EXISTS key`  
    Prints _true_ if key exists, else _false_.
 4. `SETINT key val`  
