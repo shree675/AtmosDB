@@ -9,6 +9,11 @@ type InputPayload struct {
 	Op   int8 // see util/constants.go
 }
 
+type InputSubscriptionPayload struct {
+	SId string
+	Key string
+}
+
 type OutputPayload struct {
 	Key  string
 	Val  any

@@ -15,3 +15,5 @@ var Types = map[int8]t.DataType{
 const Concurrency int = 16
 const TtlFreq int64 = 2e9
 const CacheUB int = 1000
+const StreamQ int = 1000
+const StreamDeleteId string = "<nil>"

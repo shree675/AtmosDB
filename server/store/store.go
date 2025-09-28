@@ -60,6 +60,14 @@ func StoreValue(ip *t.InputPayload) bool {
 		go AddExpiryItem(ip.Key, now+int64(ttl)*1000)
 	}
 
+	// ignore if stream is full
+	if len(stream) < util.StreamQ {
+		stream <- t.StreamItem{
+			Key: ip.Key,
+			Val: ip.Val,
+		}
+	}
+
 	return true
 }
 
@@ -67,14 +75,15 @@ func UpdateValue(ip *t.InputPayload) bool {
 	hash := hashCode(ip.Key)
 
 	sem[hash].Lock()
-	defer sem[hash].Unlock()
 
 	edat, exists := data[ip.Key]
 	if !exists {
 		log.Println(util.GetYellowStr("[ERROR] [" + ip.SId + "] No such key exists: " + ip.Key))
+		sem[hash].Unlock()
 		return false
 	} else if edat.Type != int8(util.INT) {
 		log.Println(util.GetYellowStr("[ERROR] [" + ip.SId + "] Wrong type for key: " + ip.Key + ", expected (int32)"))
+		sem[hash].Unlock()
 		return false
 	}
 
@@ -83,7 +92,27 @@ func UpdateValue(ip *t.InputPayload) bool {
 	edat.Val = edat.Val.(int) + delta.(int)
 	data[ip.Key] = edat
 
+	sem[hash].Unlock()
+
+	// ignore if stream is full
+	if len(stream) < util.StreamQ {
+		stream <- t.StreamItem{
+			Key: ip.Key,
+			Val: edat.Val,
+		}
+	}
+
 	return true
+}
+
+func HasKey(key string) bool {
+	hash := hashCode(key)
+
+	sem[hash].RLock()
+	defer sem[hash].RUnlock()
+
+	_, ok := data[key]
+	return ok
 }
 
 func GetValue(ip *t.InputPayload) (t.OutputPayload, bool) {
@@ -105,9 +134,16 @@ func DeleteValue(key string) {
 	hash := hashCode(key)
 
 	sem[hash].Lock()
-	defer sem[hash].Unlock()
-
 	delete(data, key)
+	sem[hash].Unlock()
+
+	// ignore if stream is full
+	if len(stream) < util.StreamQ {
+		stream <- t.StreamItem{
+			Key: key,
+			Val: util.StreamDeleteId,
+		}
+	}
 }
 
 func hashCode(key string) int {

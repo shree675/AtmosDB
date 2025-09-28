@@ -26,3 +26,8 @@ func (it ExpiryItem) Compare(other queue.Item) int {
 		return 0
 	}
 }
+
+type StreamItem struct {
+	Key string
+	Val any
+}
