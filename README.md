@@ -18,6 +18,8 @@ AtmosDB tries to achieve a low memory footprint for large number of key-value pa
 
 Server currently communicates on HTTP/1.1, making it possible to connect to the server through a driver written in any language (planned).
 
+AtmosDB also has a streaming feature where the client can subscribe to a key and all changes to the value of that key will be streamed to the client in an almost realtime manner.
+
 ## Setup
 
 Clone the repository and execute the following to install `atmos-cli` locally:
@@ -70,6 +72,8 @@ These are the commands currently supported:
     Increments the value by 1, stored value must be int.
 12. `DECR key`  
     Decrements the value by 1, stored value must be int.
+13. `SUB key`  
+    Subscribes to the changes in values of the key, key can be of any type.
 
 ## Datatypes
 
@@ -86,7 +90,7 @@ Contributions are welcome!
 Improvements and TODOs:
 
 - [ ] Implement better connection pooling, or look for other transport layer approaches for keeping client connections open.
-- [ ] Support sending events and client subscriptions.
+- [x] Support sending events and client subscriptions.
 - [ ] Support arrays and sets and their corresponding operations.
 - [ ] Support other basic commands like `INCRBY`, `DECRBY`, `EXPIREAT`, `GETEXP` or any other for common usages.
 - [ ] Write drivers for languages like Java and Go.
