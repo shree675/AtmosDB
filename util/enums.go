@@ -28,4 +28,5 @@ const (
 	INCR         Command = "INCR"
 	DECR         Command = "DECR"
 	EXISTS       Command = "EXISTS"
+	SUB          Command = "SUB"
 )

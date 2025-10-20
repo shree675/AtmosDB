@@ -2,10 +2,14 @@ package cli
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
 
 	t "atmosdb/types"
@@ -170,5 +174,69 @@ func HandleIncrementValue(session t.SessionConfig, args []string, order int) {
 		util.PrintGreen("[OK]")
 	} else {
 		util.PrintYellow("[FAILED]")
+	}
+}
+
+func HandleSubscribeKey(session t.SessionConfig, args []string) {
+	if len(args) != 2 {
+		util.PrintGray("Incorrect arguments for " + args[0] + ", expecting 'key'")
+		return
+	}
+
+	payload := t.InputSubscriptionPayload{
+		SId: session.SId,
+		Key: args[1],
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	body, _ := json.Marshal(&payload)
+	req, err := http.NewRequestWithContext(ctx, "POST", session.Conn+"/subscribe", bytes.NewBuffer(body))
+	if err != nil {
+		util.PrintRed("Error while subscribing to key: " + err.Error())
+		return
+	}
+
+	req.Header.Set("Accept", "text/event-stream")
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := session.SSEClient.Do(req)
+	if err != nil {
+		util.PrintRed("Error while subscribing to key: " + err.Error())
+		return
+	}
+	defer res.Body.Close()
+
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, os.Interrupt)
+
+	go func(cancel context.CancelFunc) {
+		<-ch
+		cancel()
+	}(cancel)
+
+	for {
+		buf := make([]byte, util.StreamBufSize)
+
+		n, err := res.Body.Read(buf)
+		if err != nil {
+			if err == io.EOF {
+				util.PrintRed("[FAILED] Stream closed by server, the key might not exist")
+			} else if errors.Is(err, context.Canceled) {
+				return
+			} else {
+				util.PrintRed("[FAILED] " + err.Error())
+			}
+			return
+		}
+
+		value := string(buf[:n])
+		if value == util.StreamDeleteId {
+			util.PrintYellow("[TERM] Key has been removed")
+			return
+		}
+
+		fmt.Printf("%s\n", value)
 	}
 }

@@ -79,6 +79,7 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 	exists := st.HasKey(isp.Key)
 	if !exists {
 		http.Error(w, "No such key exists", http.StatusNotFound)
+		log.Println("[" + isp.SId + "] No such key exists: " + isp.Key)
 		return
 	}
 

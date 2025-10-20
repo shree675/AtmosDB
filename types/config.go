@@ -9,7 +9,8 @@ type ServerConfig struct {
 }
 
 type SessionConfig struct {
-	Client *http.Client
-	SId    string
-	Conn   string
+	Client    *http.Client
+	SSEClient *http.Client
+	SId       string
+	Conn      string
 }

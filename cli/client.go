@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"os/signal"
 	"strings"
 	"time"
 
@@ -27,14 +25,6 @@ func Run(conn string) {
 		panic(err)
 	}
 	defer rl.Close()
-
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, os.Interrupt)
-
-	go func() {
-		<-ch
-		os.Exit(0)
-	}()
 
 	for {
 		line, err := rl.Readline()
@@ -66,6 +56,9 @@ func createSession(url string) t.SessionConfig {
 	return t.SessionConfig{
 		Client: &http.Client{
 			Timeout: 5 * time.Second,
+		},
+		SSEClient: &http.Client{
+			Timeout: 0,
 		},
 		SId:  uuid.NewString(),
 		Conn: url,
@@ -116,6 +109,8 @@ func process(args []string, session t.SessionConfig) {
 		HandleIncrementValue(session, args, -1)
 	case string(util.EXISTS):
 		HandleGetKey(session, args)
+	case string(util.SUB):
+		HandleSubscribeKey(session, args)
 	default:
 		util.PrintGray("Unknown command '" + args[0] + "'")
 	}
